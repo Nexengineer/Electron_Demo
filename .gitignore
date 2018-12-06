@@ -1,5 +1,7 @@
-node_modules/
-
+node_modules
+out
+.eslintcache
+package-lock.json
 # Build Folders
 app/
 dist/
@@ -9,6 +11,8 @@ dist/
 
 # WebStorm Project Folder
 .idea
+# NeDB local file
+db
 
 # Jest Snapshot Folder
 **/__snapshots__/
