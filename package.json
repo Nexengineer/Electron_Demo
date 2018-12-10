@@ -2,7 +2,7 @@
   "name": "billingapp",
   "productName": "billingapp",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Billing App for small stores",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -32,7 +32,7 @@
         "packageManager": "yarn"
       },
       "electronWinstallerConfig": {
-        "name": "jswallet"
+        "name": "billingapp"
       },
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
@@ -42,7 +42,7 @@
       },
       "windowsStoreConfig": {
         "packageName": "",
-        "name": "jswallet"
+        "name": "billingapp"
       }
     }
   },

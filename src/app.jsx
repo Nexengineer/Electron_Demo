@@ -2,6 +2,7 @@
 import React from 'react';
 import { Tabs, Icon, Layout, Button } from 'antd';
 const { Header, Footer, Content } = Layout;
+import BillingContent from './billing.content.component';
 
 export default class App extends React.Component {
     render() {
@@ -15,14 +16,14 @@ export default class App extends React.Component {
             </Header>
             <Content>
                 <div className="App">
-                    <Tabs defaultActiveKey="2" style={{ padding: '16px' }}>
-                        <Tabs.TabPane tab={<span><Icon type="line-chart" />Price Charts</span>} key="1">
-                            {/* <StatsContent /> */}
+                    <Tabs defaultActiveKey="1" style={{ padding: '16px' }}>
+                        <Tabs.TabPane tab={<span><Icon type="shopping-cart" />Billing</span>} key="1">
+                            <BillingContent />
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab={<span><Icon type="wallet" />Wallets</span>} key="2">
+                        <Tabs.TabPane tab={<span><Icon type="database" />Stocks</span>} key="2">
                             {/* <WalletsContent /> */}
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab={<span><Icon type="credit-card" />Payments</span>} key="3">
+                        <Tabs.TabPane tab={<span><Icon type="copy" />History</span>} key="3">
                             {/* <TransactionsContent /> */}
                         </Tabs.TabPane>
                     </Tabs>
