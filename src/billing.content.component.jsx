@@ -21,7 +21,9 @@ class BillingContent extends React.Component {
     }
 
     handleCancel(){
-        console.log('cancel button pressed');
+        this.setState({
+            modalOpenAdd: false
+        })
     }
 
     render(){
@@ -49,12 +51,9 @@ class BillingContent extends React.Component {
                     onCancel= {this.handleCancel}
                     onOk ={this.handleAdd}>
                     <AddItemsForm
-                        ref = {form => (this.form = form)}
-                        handleAdd = {this.handleAdd}
-                    />
+                        ref={form => (this.form = form)}
+                        handleAdd = {this.handleAdd}/>
                 </Modal>
-
-
             </div>
         )
     }
