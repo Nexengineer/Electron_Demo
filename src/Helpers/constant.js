@@ -3,25 +3,29 @@ const AppStrings = {
 }
 
 const dataSource = [ {
-    item: 'chair',
-    quantity: 32,
-    mrp: 40,
-    total: 100
+    id: 0,
+    item: 'Cello Plastic chair',
+    quantity: 0,
+    mrp: 400.0,
+    total: 0.0
   }, {
-    item: 'chair',
-    quantity: 32,
-    mrp: 40,
-    total: 100
+    id: 1,
+    item: 'Cello Plastic table',
+    quantity: 0,
+    mrp: 700,
+    total: 0.0
   },{
-    item: 'chair',
-    quantity: 32,
-    mrp: 40,
-    total: 100
+    id: 2,
+    item: 'Supreme Plastic chair',
+    quantity: 0,
+    mrp: 1000,
+    total: 0.0
   },{
-    item: 'chair',
-    quantity: 32,
-    mrp: 40,
-    total: 100
+    id: 3,
+    item: 'Supreme Plastic table',
+    quantity: 0,
+    mrp: 1400,
+    total: 0.0
   }];
 
 

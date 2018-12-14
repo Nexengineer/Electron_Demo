@@ -13,13 +13,61 @@ class BillingContent extends React.Component {
         };
         this.handleAdd = this.handleAdd.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
-
+        this.handleIncQuatity = this.handleIncQuatity.bind(this);
+        this.handleDescQuantity = this.handleDescQuantity.bind(this);
     }// constructor  for this class.
 
     componentDidMount() {
         this.setState({
             itemsAdded: dataSource
         })
+    }
+
+    // This code chunck is handling the increase and decrese in quantity
+    handleIncQuatity(event, record){
+        let arrTempdata = this.state.itemsAdded;
+        for (let i =0 ; i< arrTempdata.length; i++) {
+            if (arrTempdata[i].id == record.id) {
+                arrTempdata[i].quantity = arrTempdata[i].quantity + 1;
+                arrTempdata[i].total = arrTempdata[i].mrp * arrTempdata[i].quantity;
+                break;
+            }
+        }
+        this.calculateTotal(arrTempdata);
+    }
+
+    handleDescQuantity(event, record){
+        let arrTempdata = this.state.itemsAdded;
+        for (let i =0 ; i< arrTempdata.length; i++) {
+            if (arrTempdata[i].id == record.id) {
+                if (arrTempdata[i].quantity > 0) {
+                    arrTempdata[i].quantity = arrTempdata[i].quantity - 1;
+                    arrTempdata[i].total = arrTempdata[i].total - arrTempdata[i].mrp;
+                    break;
+                }
+            }
+        }
+        this.calculateTotal(arrTempdata);
+    }
+
+    // This method will calculate the total sum
+    calculateTotal(arrData){
+        console.log(arrData)
+        console.log(this.state.itemsAdded)
+
+        this.setState({
+            itemsAdded: arrData
+        })
+        let tempSum = 0.0
+        for (let i= 0; i< arrData.length; i++) {
+            tempSum = tempSum + arrData[i].total
+
+        }
+        this.setState({
+            totalAmount: tempSum
+        })
+        console.log(arrData)
+        console.log(this.state.itemsAdded)
     }
 
     handleAdd(){
@@ -36,20 +84,23 @@ class BillingContent extends React.Component {
         const onDeleteRow = (event, record) => {
             console.log(record);
             event.stopPropagation();
-           // record.erase();
+            let arrTemp = this.state.itemsAdded.filter(w => w.id !== record.id)
+            this.calculateTotal(arrTemp);
         } // This is when delete is pressed 
 
         const columns = [
-            {title: 'Item', dataIndex: 'item', key: 'item', width: '20%',
+            {title: 'Item', dataIndex: 'item', key: 'item', width: '40%',
                 render: text => <h3>{text}</h3>},
-            {title: 'Quantity', dataIndex: 'quantity', key: 'quantity',width: '20%', 
-                render: (text) => {
+            {title: 'Quantity', dataIndex: 'quantity', key: 'quantity',width: '15%', 
+                render: (text, r) => {
                     return(
                         <Row gutter={8}>
                             <Col span={8}>
                                 <Button type="danger"
                                     shape="circle"
                                     icon="minus"
+                                    id={text}
+                                    onClick = {e => this.handleDescQuantity(e, r)}
                                 />
                             </Col>
                             <Col span={8}>
@@ -59,16 +110,17 @@ class BillingContent extends React.Component {
                                 <Button type="primary"
                                     shape="circle"
                                     icon="plus"
+                                    onClick={e => this.handleIncQuatity(e, r)}
                                     />
                             </Col>
                         </Row>        
                     )}
             },
-            {title: 'MRP (1 item)', dataIndex: 'mrp', key: 'mrp', width: '20%',
+            {title: 'MRP (1 item)', dataIndex: 'mrp', key: 'mrp', width: '15%',
                 render: text => <h3>₹ {text}</h3>},
             {title: 'Total', key: 'total',dataIndex: 'total', width: '20%',
                 render: text => <h3>₹ {text}</h3>},
-            {title: 'Action', key: 'action',width: '20%', render: (r) => {
+            {title: 'Action', key: 'action',width: '10%', render: (r) => {
                 return (
                         <div style = {{justifyContent: 'center', alignContent:'center'}}>
                         <Popconfirm title="Sure to delete?"
@@ -90,6 +142,13 @@ class BillingContent extends React.Component {
                         onClick ={()=>this.setState({ modalOpenAdd: true, })}>
                         Add Item
                     </Button>
+                    <Button
+                        type= 'danger'
+                        icon= 'reload'
+                        onClick ={()=>{}}
+                        style = {{marginLeft: '10px'}}>
+                        Reset
+                    </Button>  
                     <Button
                         type= 'danger'
                         icon= 'printer'
@@ -118,10 +177,8 @@ class BillingContent extends React.Component {
                     size="middle"
                     style={{ backgroundColor: 'white'}} />
                 </div>
-                
-
                 <div style={{ marginTop: '24px', backgroundColor: 'green', padding: 10 }}>
-                    <h2 style={{color: 'white'}}>Total: ₹ Not implemented</h2>
+                    <h2 style={{color: 'white'}}>Total: ₹ {this.state.totalAmount}</h2>
                 </div>
             </div>
         )
