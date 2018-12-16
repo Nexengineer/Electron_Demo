@@ -38,4 +38,10 @@
     width: 100%;
     text-align: center;
 }
+.demo-stock-container {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    overflow: auto;
+    height: 650px; 
+}
   

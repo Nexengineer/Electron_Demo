@@ -3,6 +3,7 @@ import React from 'react';
 import { Tabs, Icon, Layout, Button } from 'antd';
 const { Header, Footer, Content } = Layout;
 import BillingContent from './billing.content.component';
+import StockContent from './stock.content.component';
 
 export default class App extends React.Component {
     render() {
@@ -12,16 +13,16 @@ export default class App extends React.Component {
                 <img style={{ marginTop: '10px', height: '40px', width: 'auto', float: 'left', marginRight: '18px' }}
                      src="../assets/logo.png"
                      alt="Bitcoin Logo" />
-                <h3>Zoya Steel and Furniture Billing System</h3>
+                <h3>Zoya Steel Furniture Billing System</h3>
             </Header>
             <Content>
                 <div className="App">
-                    <Tabs defaultActiveKey="1" style={{ padding: '16px' }}>
+                    <Tabs defaultActiveKey="2" style={{ padding: '16px' }}>
                         <Tabs.TabPane tab={<span><Icon type="shopping-cart" />Billing</span>} key="1">
                             <BillingContent />
                         </Tabs.TabPane>
                         <Tabs.TabPane tab={<span><Icon type="database" />Stocks</span>} key="2">
-                            {/* <WalletsContent /> */}
+                            <StockContent />
                         </Tabs.TabPane>
                         <Tabs.TabPane tab={<span><Icon type="copy" />History</span>} key="3">
                             {/* <TransactionsContent /> */}
