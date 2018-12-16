@@ -3,6 +3,7 @@ import { Button, Table, Popconfirm, Modal, message, Row, Col } from 'antd';
 import AddItemsForm from './form.model.component';
 import dataSource from './Helpers/constant'
 import InfiniteScroll from 'react-infinite-scroller';
+import PrintForm from './print.form.modal.component';
 
 class BillingContent extends React.Component {
     constructor(props) {
@@ -10,6 +11,7 @@ class BillingContent extends React.Component {
         this.state = {
             modalOpenAdd: false,
             modalOpenPrint: false,
+            showPrintAndReset: true,
             itemsAdded: [],
             totalAmount: 0.0,
             currentID: 0
@@ -31,10 +33,16 @@ class BillingContent extends React.Component {
     // Func to handle Print
     handlePrint(){
         console.log("Printing will be done here");
-        this.setState({
-            currentID: 0,
-            itemsAdded: []
-        })
+        const name = this.form.state.name;
+        const address = this.form.state.address;
+        const phone = this.form.state.phone;
+        if (name != '' && address != ''&& phone != ''){
+            this.setState({
+                modalOpenPrint: false
+            })
+        }
+
+        console.log(this.form)
     }
 
     handleReset(){
@@ -62,7 +70,7 @@ class BillingContent extends React.Component {
         let arrTempdata = this.state.itemsAdded;
         for (let i = 0; i < arrTempdata.length; i++) {
             if (arrTempdata[i].id == record.id) {
-                if (arrTempdata[i].quantity > 0) {
+                if (arrTempdata[i].quantity > 1) {
                     arrTempdata[i].quantity = arrTempdata[i].quantity - 1;
                     arrTempdata[i].total = arrTempdata[i].total - arrTempdata[i].mrp;
                     break;
@@ -85,8 +93,10 @@ class BillingContent extends React.Component {
             tempSum = tempSum + arrData[i].total
 
         }
+        let showPrint = tempSum > 0 ? false : true;
         this.setState({
-            totalAmount: tempSum
+            totalAmount: tempSum,
+            showPrintAndReset: showPrint
         })
         console.log(arrData)
         console.log(this.state.itemsAdded)
@@ -112,7 +122,8 @@ class BillingContent extends React.Component {
 
     handleCancel() {
         this.setState({
-            modalOpenAdd: false
+            modalOpenAdd: false,
+            modalOpenPrint: false
         })
     }// Callback handler for  the cancel Button.
 
@@ -190,6 +201,7 @@ class BillingContent extends React.Component {
                     <Button
                         type='danger'
                         icon='reload'
+                        disabled= {this.state.showPrintAndReset}
                         onClick={this.handleReset}
                         style={{ marginLeft: '10px' }}>
                         Reset
@@ -197,7 +209,8 @@ class BillingContent extends React.Component {
                     <Button
                         type='danger'
                         icon='printer'
-                        onClick={this.handlePrint}
+                        disabled = {this.state.showPrintAndReset}
+                        onClick={() => this.setState({ modalOpenPrint: true, })}
                         style={{ position: "absolute", right: '10px' }}>
                         Print
                     </Button>
@@ -211,6 +224,16 @@ class BillingContent extends React.Component {
                     <AddItemsForm
                         ref={form => (this.form = form)}
                         handleAdd={this.handleAdd} />
+                </Modal>
+                <Modal
+                    title='Additional Details'
+                    visible={this.state.modalOpenPrint}
+                    okText="OK"
+                    onCancel={this.handleCancel}
+                    onOk={this.handlePrint}>
+                    <PrintForm
+                        ref={form => (this.form = form)}
+                        handlePrint={this.handlePrint} />
                 </Modal>
                 <div className="demo-infinite-table-container">
                     <InfiniteScroll
