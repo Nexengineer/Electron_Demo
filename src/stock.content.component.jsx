@@ -1,8 +1,19 @@
 import React from 'react';
 import { Button, Table, Modal, Input, Icon } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
+import _ from 'lodash';
 
 import Stock from './Helpers/StockDummy';
+import AddModelStock from './StockModal/add.stock.model.component';
+
+const validateFormHashed = (form) => {
+    return new Promise((res, rej) => {
+        form.validateFields((err, values) => {
+            res(values);
+        });
+    });
+};
+
 
 class StockContent extends React.Component {
     constructor(props) {
@@ -11,6 +22,7 @@ class StockContent extends React.Component {
             arrStocks: [],
             modalIsOpenNewStock: false,
             modalIsOpenAddQuantity: false,
+            modalChangeMRP: false,
         }
 
         this.icons = {
@@ -18,7 +30,8 @@ class StockContent extends React.Component {
         };
 
         this.onChangeSearchStr = this.onChangeSearchStr.bind(this);
-
+        this.handleCancel = this.handleCancel.bind(this);
+        this.handleAddStock = this.handleAddStock.bind(this)
     }
 
     componentWillMount() {
@@ -29,7 +42,48 @@ class StockContent extends React.Component {
 
     onChangeSearchStr(textValue) {
         console.log(textValue.target.value)
+        let searchedArr;
+        let searchString = textValue.target.value;
+        if (searchString !== '') {
+            var results = _.filter(this.state.arrStocks, function (obj) {
+                return obj.name.toLowerCase().indexOf(searchString.toLowerCase()) > -1
+                    || obj.brand.toLowerCase().indexOf(searchString.toLowerCase()) > -1;
+            });
+            console.log(results);
+            searchedArr = results;
+        } else {
+            searchedArr = Stock;
+        }
+        this.setState({
+            arrStocks: searchedArr
+        })
     }
+
+    handleAddStock() {
+        this.form.validateFields((err, values) => {
+            console.log(values)
+            if (typeof values.name != 'undefined' && typeof values.brand != 'undefined' &&
+                typeof values.mrp != 'undefined' && typeof values.actual_price != 'undefined' &&
+                typeof values.quantity != 'undefined' && typeof values.billNo != 'undefined' &&
+                isFinite(values.mrp) && isFinite(values.actual_price) && isFinite(values.billNo) &&
+                isFinite(values.quantity)) {
+                this.form.resetFields();
+                this.setState({
+                    modalIsOpenNewStock: false
+                })
+            }
+        });
+    }
+
+    handleCancel() {
+        this.setState({
+            modalChangeMRP: false,
+            modalIsOpenAddQuantity: false,
+            modalIsOpenNewStock: false
+        })
+    }
+
+
 
 
     render() {
@@ -61,13 +115,13 @@ class StockContent extends React.Component {
                             <Button
                                 type='dashed'
                                 icon="plus">
-                                Edit Quantity 
+                                Edit Quantity
                             </Button>
                             <h1></h1>
                             <Button
                                 type='dashed'
                                 icon="tags">
-                                Edit MRP 
+                                Edit MRP
                             </Button>
                         </div>
 
@@ -81,7 +135,7 @@ class StockContent extends React.Component {
                     <Button
                         type='primary'
                         icon='plus-circle-o'
-                        onClick={() => { }}>
+                        onClick={() => { this.setState({ modalIsOpenNewStock: true }) }}>
                         Add New Item
                     </Button>
                     <div style={{ marginTop: '12px' }}>
@@ -92,6 +146,17 @@ class StockContent extends React.Component {
                     </div>
                 </div>
                 {/* Add Modal for New Item */}
+                <Modal
+                    title='Add New Item Stock'
+                    visible={this.state.modalIsOpenNewStock}
+                    okText="Add"
+                    onCancel={this.handleCancel}
+                    onOk={this.handleAddStock}>
+                    <AddModelStock
+                        ref={form => (this.form = form)}
+                        handleAddStock={this.handleAddStock} />
+                </Modal>
+                {/*------------------------*/}
                 <div className="demo-stock-container">
                     <InfiniteScroll
                         initialLoad={false}
@@ -108,7 +173,9 @@ class StockContent extends React.Component {
                             style={{ backgroundColor: 'white' }} />
                     </InfiniteScroll>
                 </div>
-                {/* Add Model for quantity Increase */}
+                {/* Add Model for Edit Quantity */}
+                {/* Add Model for Edit MRP */}
+
             </div>
         )
     }
