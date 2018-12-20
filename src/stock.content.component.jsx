@@ -2,10 +2,11 @@ import React from 'react';
 import { Button, Table, Modal, Input, Icon, message } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 import _ from 'lodash';
-import {sha256} from 'js-sha256'
+import { sha256 } from 'js-sha256'
 
 import Stock from './Helpers/StockDummy';
 import AddModelStock from './StockModal/add.stock.model.component';
+import UpdateQuantity from './StockModal/update.quantity.stock.modal.component';
 import Messages from './Helpers/messages';
 import Database from "./Helpers/dbhelper";
 
@@ -26,7 +27,8 @@ class StockContent extends React.Component {
             modalIsOpenNewStock: false,
             modalIsOpenAddQuantity: false,
             modalChangeMRP: false,
-
+            arrIntialStocks: [],
+            selectedItem: null
         }
 
         this.icons = {
@@ -35,15 +37,31 @@ class StockContent extends React.Component {
 
         this.onChangeSearchStr = this.onChangeSearchStr.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
-        this.handleAddStock = this.handleAddStock.bind(this)
+        this.handleAddStock = this.handleAddStock.bind(this);
+        this.handleIncreseQuantity = this.handleIncreseQuantity.bind(this);
+        this.refreshComponent = this.refreshComponent.bind(this);
     }
 
     componentWillMount() {
         let dbHandlerTemp = new Database('stock')
-        this.setState({
-            arrStocks: Stock,
-            dbHandler: dbHandlerTemp
-        })
+        dbHandlerTemp.find({}).then((docs) => {
+            console.log(docs)
+            this.setState({
+                arrStocks: docs,
+                dbHandler: dbHandlerTemp,
+                arrIntialStocks:docs
+            })
+        });
+
+    }
+    refreshComponent(){
+        this.state.dbHandler.find({}).then((docs) => {
+            console.log(docs)
+            this.setState({
+                arrStocks: docs,
+                arrIntialStocks:docs
+            })
+        });
     }
 
     onChangeSearchStr(textValue) {
@@ -58,7 +76,7 @@ class StockContent extends React.Component {
             console.log(results);
             searchedArr = results;
         } else {
-            searchedArr = Stock;
+            searchedArr = this.state.arrIntialStocks;
         }
         this.setState({
             arrStocks: searchedArr
@@ -75,7 +93,7 @@ class StockContent extends React.Component {
                 isFinite(values.mrp) && isFinite(values.actual_price) && isFinite(values.billNo) &&
                 isFinite(values.quantity)) {
                 // Generating Hash to individually identify element (Using sha256)
-                let hash = sha256(values.name.toLowerCase() + values.brand.toLowerCase()); 
+                let hash = sha256(values.name.toLowerCase() + values.brand.toLowerCase());
                 //Creating object to store in db
                 const obj = {
                     name: values.name,
@@ -86,16 +104,45 @@ class StockContent extends React.Component {
                     date_received: new Date(),
                     hash: hash
                 }
-                
-                this.state.dbHandler.insert(obj).then(() => {
-                    message.success(Messages.Messages.Stock.Created);
+                var results = _.filter(this.state.arrStocks, function (obj) {
+                    return obj.hash.indexOf(hash) > -1
+                });
+                if(results.length<=0) {
+                    this.state.dbHandler.insert(obj).then(() => {
+                        message.success(Messages.Messages.Stock.Created);
+                        this.form.resetFields();
+                        this.setState({
+                            modalIsOpenNewStock: false
+                        })
+                        this.refreshComponent()
+                    }, (e) => {
+                        message.error(Messages.Messages.Stock.Failed);
+                    });
+                } else {
+                    message.error(Messages.Messages.Stock.Error);
+                }
+            }
+        }
+        );
+    }
+
+    handleIncreseQuantity(){
+        this.form.validateFields((err, values) => {
+            let tempQuantity = Number(this.state.selectedItem.quantity) + Number(values.quantity)
+            if (isFinite(values.quantity)){
+                this.state.dbHandler.updateQuantity(this.state.selectedItem.hash , tempQuantity)
+                .then(() => {
+                    message.success(Messages.Messages.Update.Success);
                     this.form.resetFields();
                     this.setState({
-                        modalIsOpenNewStock: false
+                        modalIsOpenAddQuantity: false,
+                        selectedItem: null
                     })
+                    this.refreshComponent()
                 }, (e) => {
-                    message.success(Messages.Messages.Wallet.Failed);
+                    message.error(Messages.Messages.Update.Failure);
                 });
+            
             }
         });
     }
@@ -108,10 +155,15 @@ class StockContent extends React.Component {
         })
     }
 
-
-
-
     render() {
+
+        const openIncreaseQuantityModal = (event, record) => {
+            this.setState({
+                selectedItem: record,
+                modalIsOpenAddQuantity: true,
+            });
+        };
+
         const column = [
             {
                 title: 'Name', dataIndex: 'name', key: 'name', width: '15%',
@@ -139,7 +191,8 @@ class StockContent extends React.Component {
                         <div>
                             <Button
                                 type='dashed'
-                                icon="plus">
+                                icon="plus"
+                                onClick={e => openIncreaseQuantityModal(e, r)}>
                                 Edit Quantity
                             </Button>
                             <h1></h1>
@@ -199,6 +252,18 @@ class StockContent extends React.Component {
                     </InfiniteScroll>
                 </div>
                 {/* Add Model for Edit Quantity */}
+                <Modal
+                    title='Add quantity'
+                    visible={this.state.modalIsOpenAddQuantity}
+                    okText="Add"
+                    onCancel={this.handleCancel}
+                    onOk={this.handleIncreseQuantity}>
+                    <UpdateQuantity
+                        ref={form => (this.form = form)}
+                        handleIncreseQuantity={this.handleIncreseQuantity} />
+                </Modal>
+                {/*------------------------*/}
+
                 {/* Add Model for Edit MRP */}
 
             </div>
