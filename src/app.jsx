@@ -13,7 +13,7 @@ export default class App extends React.Component {
                 <img style={{ marginTop: '10px', height: '40px', width: 'auto', float: 'left', marginRight: '18px' }}
                      src="../assets/logo.png"
                      alt="Bitcoin Logo" />
-                <h3>Zoya Steel Furniture Billing System</h3>
+                <h3>Generic Billing System</h3>
             </Header>
             <Content>
                 <div className="App">

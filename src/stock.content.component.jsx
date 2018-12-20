@@ -1,10 +1,13 @@
 import React from 'react';
-import { Button, Table, Modal, Input, Icon } from 'antd';
+import { Button, Table, Modal, Input, Icon, message } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 import _ from 'lodash';
+import {sha256} from 'js-sha256'
 
 import Stock from './Helpers/StockDummy';
 import AddModelStock from './StockModal/add.stock.model.component';
+import Messages from './Helpers/messages';
+import Database from "./Helpers/dbhelper";
 
 const validateFormHashed = (form) => {
     return new Promise((res, rej) => {
@@ -23,6 +26,7 @@ class StockContent extends React.Component {
             modalIsOpenNewStock: false,
             modalIsOpenAddQuantity: false,
             modalChangeMRP: false,
+
         }
 
         this.icons = {
@@ -35,8 +39,10 @@ class StockContent extends React.Component {
     }
 
     componentWillMount() {
+        let dbHandlerTemp = new Database('stock')
         this.setState({
-            arrStocks: Stock
+            arrStocks: Stock,
+            dbHandler: dbHandlerTemp
         })
     }
 
@@ -62,15 +68,34 @@ class StockContent extends React.Component {
     handleAddStock() {
         this.form.validateFields((err, values) => {
             console.log(values)
+            // Condition check for hidding the modal
             if (typeof values.name != 'undefined' && typeof values.brand != 'undefined' &&
                 typeof values.mrp != 'undefined' && typeof values.actual_price != 'undefined' &&
                 typeof values.quantity != 'undefined' && typeof values.billNo != 'undefined' &&
                 isFinite(values.mrp) && isFinite(values.actual_price) && isFinite(values.billNo) &&
                 isFinite(values.quantity)) {
-                this.form.resetFields();
-                this.setState({
-                    modalIsOpenNewStock: false
-                })
+                // Generating Hash to individually identify element (Using sha256)
+                let hash = sha256(values.name.toLowerCase() + values.brand.toLowerCase()); 
+                //Creating object to store in db
+                const obj = {
+                    name: values.name,
+                    brand: values.brand,
+                    mrp: values.mrp,
+                    actual_price: values.actual_price,
+                    quantity: values.quantity,
+                    date_received: new Date(),
+                    hash: hash
+                }
+                
+                this.state.dbHandler.insert(obj).then(() => {
+                    message.success(Messages.Messages.Stock.Created);
+                    this.form.resetFields();
+                    this.setState({
+                        modalIsOpenNewStock: false
+                    })
+                }, (e) => {
+                    message.success(Messages.Messages.Wallet.Failed);
+                });
             }
         });
     }
