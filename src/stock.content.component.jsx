@@ -7,6 +7,7 @@ import { sha256 } from 'js-sha256'
 import Stock from './Helpers/StockDummy';
 import AddModelStock from './StockModal/add.stock.model.component';
 import UpdateQuantity from './StockModal/update.quantity.stock.modal.component';
+import UpdateMRP from './StockModal/update.mrp.stock.modal.component';
 import Messages from './Helpers/messages';
 import Database from "./Helpers/dbhelper";
 
@@ -39,6 +40,7 @@ class StockContent extends React.Component {
         this.handleCancel = this.handleCancel.bind(this);
         this.handleAddStock = this.handleAddStock.bind(this);
         this.handleIncreseQuantity = this.handleIncreseQuantity.bind(this);
+        this.handleChangeMRP = this.handleChangeMRP.bind(this);
         this.refreshComponent = this.refreshComponent.bind(this);
     }
 
@@ -126,6 +128,26 @@ class StockContent extends React.Component {
         );
     }
 
+    handleChangeMRP(){
+        this.form.validateFields((err, values) => {
+            console.log(values);
+            if (isFinite(values.mrp)){
+                this.state.dbHandler.updateMrp(this.state.selectedItem.hash,values.mrp)
+                .then(()=>{
+                    message.success(Messages.Messages.Update.Success);
+                    this.form.resetFields();
+                    this.setState({
+                        modalChangeMRP: false,
+                        selectedItem: null
+                    })
+                    this.refreshComponent()
+                },(e) => {
+                    message.error(Messages.Messages.Update.Failure);
+                })
+            }
+        });
+    }
+
     handleIncreseQuantity(){
         this.form.validateFields((err, values) => {
             let tempQuantity = Number(this.state.selectedItem.quantity) + Number(values.quantity)
@@ -164,6 +186,13 @@ class StockContent extends React.Component {
             });
         };
 
+        const openChangeMRPModal = (event, record) => {
+            this.setState({
+                selectedItem: record,
+                modalChangeMRP: true,
+            });
+        }
+
         const column = [
             {
                 title: 'Name', dataIndex: 'name', key: 'name', width: '15%',
@@ -198,7 +227,8 @@ class StockContent extends React.Component {
                             <h1></h1>
                             <Button
                                 type='dashed'
-                                icon="tags">
+                                icon="tags"
+                                onClick={e => openChangeMRPModal(e, r)}>
                                 Edit MRP
                             </Button>
                         </div>
@@ -265,6 +295,17 @@ class StockContent extends React.Component {
                 {/*------------------------*/}
 
                 {/* Add Model for Edit MRP */}
+                <Modal
+                    title='Change MRP'
+                    visible={this.state.modalChangeMRP}
+                    okText="Change"
+                    onCancel={this.handleCancel}
+                    onOk={this.handleChangeMRP}>
+                    <UpdateMRP
+                        ref={form => (this.form = form)}
+                        handleChangeMRP={this.handleChangeMRP} />
+                </Modal>
+                {/*------------------------*/}
 
             </div>
         )

@@ -40,6 +40,14 @@ export default class Database {
 
     updateMrp(hash, mrp){
         return new Promise((res, rej) => {
+            this.db.update({ hash: hash},
+                { $set: { 
+                    mrp: mrp 
+                   } },
+                 { multi: true }, function (err, numReplaced) {
+                    if (err) rej(err);
+                    res(numReplaced)
+           });
         });
     }
 }
