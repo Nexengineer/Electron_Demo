@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Form, Icon, Table, Button } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
-import dataSource from './Helpers/constant';
+import Database from "./Helpers/dbhelper";
 import _ from 'lodash';
 
 class AddItemForm extends React.Component {
@@ -17,9 +17,13 @@ class AddItemForm extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({
-            data: dataSource
-        })
+        let dbHandlerTemp = new Database('stock')
+        dbHandlerTemp.find({}).then((docs) => {
+            console.log(docs)
+            this.setState({
+                data: docs
+            })
+        });
     }
 
     onChangeInputValue(textValue) {
@@ -44,7 +48,7 @@ class AddItemForm extends React.Component {
         // Columns Structure 
         const columns = [
             {
-                title: 'Item', dataIndex: 'item', key: 'item', width: '50%',
+                title: 'Item', dataIndex: 'name', key: 'name', width: '50%',
                 render: text => <h3>{text}</h3>
             },
             {

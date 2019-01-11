@@ -103,19 +103,41 @@ class BillingContent extends React.Component {
     }
 
     handleAdd(event, record) {
-        console.log('add item pressed');
-        console.log(event, record)
-        let temp = this.state.currentID;
+        // A New record is created 
+        const obj = {
+            name : record.brand + " " +record.name,
+            quantity: 1,
+            total: Number(record.mrp),
+            id: record.hash, 
+            actualPriceTotal: Number(record.actual_price),
+            mrp: Number(record.mrp)
+        }
+
+        // Here it is checked if the data is present or not
+        let temp = -1;
         let tempArr = this.state.itemsAdded;
-        temp = temp + 1;
-        record.quantity = 1;
-        record.total = record.mrp;
-        record.id = temp;
-        tempArr.push(record);
+        for (let i = 0; i < tempArr.length; i++) {
+            if (tempArr[i].id == record.hash) {
+                temp = i;
+                break;
+            }
+        }
+
+        // If Not avaliable the new object is pushed
+        if (temp == -1) {
+            tempArr.push(obj);
+        } else {
+            // Other wise the quantity is increased
+            this.handleIncQuatity(null, tempArr[temp]);
+        }
+
+        // Few lines are not effective now  
         this.setState({
             currentID: temp,
             modalOpenAdd: false
         })
+
+        //The total Value is calculated
         this.calculateTotal(tempArr)
 
     }// Callback handler for the Add Button.
@@ -137,7 +159,7 @@ class BillingContent extends React.Component {
 
         const columns = [
             {
-                title: 'Item', dataIndex: 'item', key: 'item', width: '40%',
+                title: 'Item', dataIndex: 'name', key: 'name', width: '40%',
                 render: text => <h3>{text}</h3>
             },
             {
