@@ -1,0 +1,305 @@
+/* Reset styles */
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700&subset=cyrillic,cyrillic-ext,latin,greek-ext,greek,latin-ext,vietnamese");
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+html {
+  line-height: 1;
+  height: 100%
+}
+
+.jss2.jss3{
+  height: calc(100% - 65px);
+}
+
+.jss189 {
+   height: calc(100% - 132px);
+}
+
+ol, ul {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+q, blockquote {
+  quotes: none;
+}
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+
+a img {
+  border: none;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+  display: block;
+}
+
+/* Invoice styles */
+/**
+ * DON'T override any styles for the <html> and <body> tags, as this may break the layout.
+ * Instead wrap everything in one main <div id="container"> element where you may change
+ * something like the font or the background of the invoice
+ */
+html, body {
+  /* MOVE ALONG, NOTHING TO CHANGE HERE! */
+}
+
+/** 
+ * IMPORTANT NOTICE: DON'T USE '!important' otherwise this may lead to broken print layout.
+ * Some browsers may require '!important' in oder to work properly but be careful with it.
+ */
+.clearfix {
+  display: block;
+  clear: both;
+}
+
+#container {
+  font: normal 13px/1.4em 'Open Sans', Sans-serif;
+  margin: 0 auto;
+  padding: 40px;
+  min-height: 1078px;
+}
+
+#memo .logo {
+  float: left;
+  margin-right: 20px;
+}
+#memo .logo img {
+  width: 150px;
+  height: 100px;
+}
+#memo .company-info {
+  float: left;
+  width: 400px;
+  max-width: 100%;
+}
+#memo .company-info > div:first-child {
+  font-weight: bold;
+  font-size: 20px;
+}
+#memo .company-info div {
+  margin-bottom: 3px;
+}
+#memo .payment-info {
+  float: right;
+  text-align: right;
+  width: 165px;
+  max-width: 100%;
+}
+#memo .payment-info div {
+  margin-bottom: 3px;
+  min-width: 20px;
+}
+#memo:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.memo-line {
+  margin-top: 30px;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+#invoice-info {
+  float: left;
+  margin-top: 50px;
+  width: 300px;
+  max-width: 100%;
+}
+#invoice-info > div {
+  float: left;
+}
+#invoice-info > div > span {
+  display: block;
+  min-width: 100px;
+  min-height: 18px;
+  margin-bottom: 3px;
+}
+#invoice-info > div:last-child {
+  margin-left: 10px;
+  text-align: right;
+}
+#invoice-info:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+#client-info {
+  float: right;
+  margin-top: 30px;
+  width: 300px;
+  max-width: 100%;
+}
+#client-info > div {
+  margin-bottom: 3px;
+}
+#client-info span {
+  display: block;
+}
+#client-info > span {
+  font-weight: bold;
+}
+
+#invoice-title-number {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 50px 0 20px 0;
+}
+#invoice-title-number #title {
+  margin-right: 5px;
+  text-align: right;
+}
+#invoice-title-number #number {
+  margin-left: 5px;
+  text-align: left;
+}
+
+table {
+  table-layout: fixed;
+}
+table th, table td {
+  vertical-align: top;
+  word-break: keep-all;
+  word-wrap: break-word;
+}
+
+#items .first-cell, #items table th:first-child, #items table td:first-child {
+  width: 18px;
+  text-align: right;
+}
+#items table {
+  border-collapse: separate;
+  width: 100%;
+}
+#items table tr:nth-child(odd) {
+  background: #fafafa;
+}
+#items table th {
+  font-weight: bold;
+  color: #fff;
+  background: #4b4f52;
+  padding: 12px 10px;
+  text-align: right;
+}
+#items table th:nth-child(2) {
+  width: 30%;
+  text-align: left;
+}
+#items table th:last-child {
+  text-align: right;
+}
+#items table td {
+  border-bottom: 1px solid #e2e2e2;
+  border-top: 1px solid #fff;
+  padding: 15px 10px;
+  text-align: right;
+}
+#items table td:first-child {
+  text-align: left;
+}
+#items table td:nth-child(2) {
+  text-align: left;
+}
+#items table td:empty:after {
+  content: '';
+  display: block;
+  min-height: 18px;
+}
+#items table span {
+  display: inline-block;
+  min-width: 20px;
+}
+
+#sums {
+  float: right;
+  margin-top: 30px;
+  page-break-inside: avoid;
+}
+#sums table tr th, #sums table tr td {
+  min-width: 100px;
+  padding: 10px;
+  text-align: right;
+}
+#sums table tr th {
+  text-align: left;
+  padding-right: 25px;
+}
+#sums table tr.amount-total th {
+  text-transform: uppercase;
+}
+#sums table tr.amount-total th, #sums table tr.amount-total td {
+  font-weight: bold;
+  border-top: 1px solid #e2e2e2;
+}
+#sums table tr:last-child th, #sums table tr:last-child td {
+  color: #fff;
+  background: #4b4f52;
+  font-weight: bold;
+}
+
+#terms {
+  margin-top: 100px;
+  page-break-inside: avoid;
+}
+#terms > span {
+  font-weight: bold;
+}
+#terms > div {
+  margin-top: 10px;
+  min-height: 70px;
+}
+
+.show-mobile {
+  display: none !important;
+}
+.demo-infinite-container {
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  overflow: auto;
+  padding: 8px 24px;
+}
+.boldText {
+  font-weight : bold;
+}
+
+/**
+ * If the printed invoice is not looking as expected you may tune up
+ * the print styles (you can use !important to override styles)
+ */
+@media print {
+  /* Here goes your print styles */
+}

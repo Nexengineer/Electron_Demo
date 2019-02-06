@@ -1,9 +1,16 @@
 import React from 'react';
-import { Button, Table, Popconfirm, Modal, message, Row, Col } from 'antd';
+import { Button, Table, Popconfirm, Modal, message,InputNumber, Row, Col } from 'antd';
 import AddItemsForm from './form.model.component';
 import dataSource from './Helpers/constant'
 import InfiniteScroll from 'react-infinite-scroller';
 import PrintForm from './print.form.modal.component';
+import jsPDF from 'jspdf';
+import { request } from 'https';
+import Printer from '../src/Helpers/print';
+
+// Testing Code
+const ipc = require('electron').ipcRenderer
+
 
 class BillingContent extends React.Component {
     constructor(props) {
@@ -14,7 +21,12 @@ class BillingContent extends React.Component {
             showPrintAndReset: true,
             itemsAdded: [],
             totalAmount: 0.0,
-            currentID: 0
+            currentID: 0,
+
+            // This is for handling GST Values
+            gstChangeAllowed: false,
+            cgstValue: 0,
+            sgstValue: 0
         };
         this.handleAdd = this.handleAdd.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
@@ -22,6 +34,8 @@ class BillingContent extends React.Component {
         this.handleDescQuantity = this.handleDescQuantity.bind(this);
         this.handlePrint = this.handlePrint.bind(this);
         this.handleReset = this.handleReset.bind(this);
+        this.onchangeCGST = this.onchangeCGST.bind(this);
+        this.onchangeSGST = this.onchangeSGST.bind(this);
     }// constructor  for this class.
 
     componentDidMount() {
@@ -31,21 +45,31 @@ class BillingContent extends React.Component {
     }
 
     // Func to handle Print
-    handlePrint(){
+    handlePrint() {
         console.log("Printing will be done here");
         const name = this.form.state.name;
         const address = this.form.state.address;
         const phone = this.form.state.phone;
-        if (name != '' && address != ''&& phone != ''){
-            this.setState({
-                modalOpenPrint: false
-            })
+        if (name != '' && address != '' && phone != '') {
+
+
         }
+
+        this.setState({
+            modalOpenPrint: false
+        })
+        var doc = new jsPDF();
+
+        doc.setFontSize(40);
+        doc.text("Octonyan loves jsPDF", 35, 25);
+        // Set the document to automatically print via JS
+
+        Printer.print(doc, "My Name is neeraj")
 
         console.log(this.form)
     }
 
-    handleReset(){
+    handleReset() {
         console.log("Reset will be hadled here");
         this.setState({
             currentID: 0,
@@ -59,7 +83,7 @@ class BillingContent extends React.Component {
         for (let i = 0; i < arrTempdata.length; i++) {
             if (arrTempdata[i].id == record.id) {
                 arrTempdata[i].quantity = arrTempdata[i].quantity + 1;
-                arrTempdata[i].total = arrTempdata[i].mrp * arrTempdata[i].quantity;
+                arrTempdata[i].total = arrTempdata[i].amountAfterGST * arrTempdata[i].quantity;
                 break;
             }
         }
@@ -72,7 +96,7 @@ class BillingContent extends React.Component {
             if (arrTempdata[i].id == record.id) {
                 if (arrTempdata[i].quantity > 1) {
                     arrTempdata[i].quantity = arrTempdata[i].quantity - 1;
-                    arrTempdata[i].total = arrTempdata[i].total - arrTempdata[i].mrp;
+                    arrTempdata[i].total = arrTempdata[i].total - arrTempdata[i].amountAfterGST;
                     break;
                 }
             }
@@ -85,8 +109,10 @@ class BillingContent extends React.Component {
         console.log(arrData)
         console.log(this.state.itemsAdded)
 
+        let gstChangeAllowed = arrData.length > 0 ? true : false
         this.setState({
-            itemsAdded: arrData
+            itemsAdded: arrData,
+            gstChangeAllowed: gstChangeAllowed
         })
         let tempSum = 0.0
         for (let i = 0; i < arrData.length; i++) {
@@ -104,13 +130,19 @@ class BillingContent extends React.Component {
 
     handleAdd(event, record) {
         // A New record is created 
+        let mrpWithGstAdded = Number(record.mrp) + (Number(record.mrp) * this.state.cgstValue)/100 +
+                            (Number(record.mrp) * this.state.sgstValue)/100 ;
+
         const obj = {
-            name : record.brand + " " +record.name,
+            name: record.brand + " " + record.name,
             quantity: 1,
-            total: Number(record.mrp),
-            id: record.hash, 
+            total: mrpWithGstAdded,
+            id: record.hash,
             actualPriceTotal: Number(record.actual_price),
-            mrp: Number(record.mrp)
+            mrp: Number(record.mrp),
+            cgst: this.state.cgstValue,
+            sgst: this.state.sgstValue,
+            amountAfterGST: mrpWithGstAdded
         }
 
         // Here it is checked if the data is present or not
@@ -148,6 +180,20 @@ class BillingContent extends React.Component {
             modalOpenPrint: false
         })
     }// Callback handler for  the cancel Button.
+    
+    onchangeCGST(value){
+        console.log(value);
+        this.setState({
+            cgstValue: value
+        })
+    }// Value Change in CGST
+
+    onchangeSGST(value){
+        console.log(value);
+        this.setState({
+            sgstValue: value
+        })
+    }// Value CHange in SGST
 
     render() {
         const onDeleteRow = (event, record) => {
@@ -159,7 +205,7 @@ class BillingContent extends React.Component {
 
         const columns = [
             {
-                title: 'Item', dataIndex: 'name', key: 'name', width: '40%',
+                title: 'Item', dataIndex: 'name', key: 'name', width: '20%',
                 render: text => <h3>{text}</h3>
             },
             {
@@ -193,6 +239,15 @@ class BillingContent extends React.Component {
                 title: 'MRP (1 item)', dataIndex: 'mrp', key: 'mrp', width: '15%',
                 render: text => <h3>₹ {text}</h3>
             },
+
+            {
+                title: 'CGST', key: 'CGST', width: '10%',
+                render: text => <h3>{this.state.cgstValue}%</h3>
+            },
+            {
+                title: 'SGST', key: 'SGST', width: '10%',
+                render: text => <h3>{this.state.sgstValue}%</h3>
+            },
             {
                 title: 'Total', key: 'total', dataIndex: 'total', width: '20%',
                 render: text => <h3>₹ {text}</h3>
@@ -212,7 +267,7 @@ class BillingContent extends React.Component {
         ]// This the column schema
 
         return (
-            <div className='Billing'>
+            <div className='rows'>
                 <div style={{ marginBottom: '12px' }}>
                     <Button
                         type='primary'
@@ -223,7 +278,7 @@ class BillingContent extends React.Component {
                     <Button
                         type='danger'
                         icon='reload'
-                        disabled= {this.state.showPrintAndReset}
+                        disabled={this.state.showPrintAndReset}
                         onClick={this.handleReset}
                         style={{ marginLeft: '10px' }}>
                         Reset
@@ -231,11 +286,35 @@ class BillingContent extends React.Component {
                     <Button
                         type='danger'
                         icon='printer'
-                        disabled = {this.state.showPrintAndReset}
+                        disabled={this.state.showPrintAndReset}
                         onClick={() => this.setState({ modalOpenPrint: true, })}
                         style={{ position: "absolute", right: '10px' }}>
                         Print
                     </Button>
+                    <div className='row'>
+                        <h3 className='gstvalue'>CGST</h3>
+                        <InputNumber
+                            defaultValue={0}
+                            min={0}
+                            max={50}
+                            formatter={value => `${value}%`}
+                            parser={value => value.replace('%', '')}
+                            disabled={this.state.gstChangeAllowed}
+                            onChange={this.onchangeCGST}
+                        />
+                    </div>
+                    <div className='row'>
+                        <h3 className='gstvalue'>SGST</h3>
+                        <InputNumber
+                            defaultValue={0}
+                            min={0}
+                            max={50}
+                            formatter={value => `${value}%`}
+                            parser={value => value.replace('%', '')}
+                            disabled={this.state.gstChangeAllowed}
+                            onChange={this.onchangeSGST}
+                        />
+                    </div>
                 </div>
                 <Modal
                     title='Add Item'

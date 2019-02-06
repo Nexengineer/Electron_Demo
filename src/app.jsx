@@ -17,7 +17,7 @@ export default class App extends React.Component {
             </Header>
             <Content>
                 <div className="App">
-                    <Tabs defaultActiveKey="2" style={{ padding: '16px' }}>
+                    <Tabs defaultActiveKey="1" style={{ padding: '16px' }}>
                         <Tabs.TabPane tab={<span><Icon type="shopping-cart" />Billing</span>} key="1">
                             <BillingContent />
                         </Tabs.TabPane>

@@ -44,4 +44,15 @@
     overflow: auto;
     height: 550px; 
 }
+.rows .row {
+    display: inline-block;
+ }
+
+.gstvalue {
+    display: inline-block;
+    padding: 5;
+    margin-left: 10px;
+    margin-right: 2;
+}
+
   

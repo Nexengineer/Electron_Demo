@@ -25,6 +25,15 @@ class AddItemForm extends React.Component {
             })
         });
     }
+    componentWillMount (){
+        let dbHandlerTemp = new Database('stock')
+        dbHandlerTemp.find({}).then((docs) => {
+            console.log(docs)
+            this.setState({
+                data: docs
+            })
+        });
+    }
 
     onChangeInputValue(textValue) {
         console.log(textValue.target.value)
