@@ -7,6 +7,8 @@ import PrintForm from './print.form.modal.component';
 import jsPDF from 'jspdf';
 import { request } from 'https';
 import Printer from '../src/Helpers/print';
+import Database from './Helpers/dbhelper';
+import Messages from './Helpers/messages';
 
 // Testing Code
 const ipc = require('electron').ipcRenderer
@@ -57,16 +59,74 @@ class BillingContent extends React.Component {
 
         this.setState({
             modalOpenPrint: false
-        })
-        var doc = new jsPDF();
+        });
+
+        // Creating the data for db 
+        const dataBaseSales = new Database('sales');
+        const date = new Date();
+        const obj = {
+            buyersName: name,
+            buyersAddress: address,
+            buyersPhoneNumber: phone,
+            itemsBought: this.state.itemsAdded,
+            totalAmount: this.state.totalAmount,
+            sellingDate: date
+        };
+
+        // Saving data to db
+        dataBaseSales.find({}).then((docs) => {
+            obj.billNo = docs.length + 1;
+            dataBaseSales.insert(obj).then(() => {
+                message.success(Messages.Messages.Stock.Created);
+                this.form.resetFields();
+                this.setState({
+                    modalIsOpenNewStock: false,
+                    itemsAdded: []
+                });
+            }, (e) => {
+                message.error(Messages.Messages.Stock.Failed);
+            });
+        });
+        // Updating the values on stocks
+        const dataBaseStock = new Database('stock');
+
+        for (let i = 0; i < this.state.itemsAdded.length; i += 1) {
+            dataBaseStock.findUsingHash(this.state.itemsAdded[i].id).then((doc) => {
+                if (doc.length > 0) {
+                    const tempQuantity = doc[0].quantity - this.state.itemsAdded[i].quantity;
+                    dataBaseStock.updateQuantity(doc[0].hash, tempQuantity)
+                    .then(() => {
+                        message.success(Messages.Messages.Update.Success);
+                        const soldObject = {
+                            id: this.state.itemsAdded[i].id,
+                            actualPriceTotal: this.state.itemsAdded[i].actualPriceTotal,
+                            cgst: this.state.itemsAdded[i].cgst,
+                            sgst: this.state.itemsAdded[i].sgst,
+                            total: this.state.itemsAdded[i].total,
+                            name: this.state.itemsAdded[i].name,
+                            quantity: this.state.itemsAdded[i].quantity,
+                            sellingDate: date,
+                            billNo: obj.billNo 
+                        };
+
+                        new Database('stock_sold').insert(soldObject);
+
+                    }, (e) => {
+                        message.error(Messages.Messages.Update.Failure);
+                    });
+                }
+            });
+        }
+
+        const doc = new jsPDF();
 
         doc.setFontSize(40);
         doc.text("Octonyan loves jsPDF", 35, 25);
         // Set the document to automatically print via JS
 
-        Printer.print(doc, "My Name is neeraj")
+        Printer.print(doc, "My Name is neeraj");
 
-        console.log(this.form)
+        console.log(this.form);
     }
 
     handleReset() {

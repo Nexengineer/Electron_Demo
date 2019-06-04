@@ -151,8 +151,8 @@ class StockContent extends React.Component {
     handleIncreseQuantity(){
         this.form.validateFields((err, values) => {
             let tempQuantity = Number(this.state.selectedItem.quantity) + Number(values.quantity)
-            if (isFinite(values.quantity)){
-                this.state.dbHandler.updateQuantity(this.state.selectedItem.hash , tempQuantity)
+            if (isFinite(values.quantity)) {
+                this.state.dbHandler.updateQuantity(this.state.selectedItem.hash, tempQuantity)
                 .then(() => {
                     message.success(Messages.Messages.Update.Success);
                     this.form.resetFields();

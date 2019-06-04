@@ -25,6 +25,24 @@ export default class Database {
         });
     }
 
+    findUsingHash(hash) {
+        return new Promise((res, rej) => {
+            this.db.find({ hash: hash }, (err, docs) => {
+                if (err) rej(err);
+                res(docs);
+            });
+        });
+    }
+
+    findUsingBillNo(billNo) {
+        return new Promise((res, rej) => {
+            this.db.find({ billNo: billNo }, (err, docs) => {
+                if (err) rej(err);
+                res(docs);
+            });
+        });
+    }
+
     updateQuantity(hash, quantity) {
         return new Promise((res, rej) => {
             this.db.update({ hash: hash},

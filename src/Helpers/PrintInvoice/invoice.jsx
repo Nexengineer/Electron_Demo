@@ -2,30 +2,65 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 const { Header, Footer, Content } = Layout;
 import { Tabs, Icon, Layout, Button } from 'antd';
+import Database from '../../Helpers/dbhelper';
+
 export default class Invoice extends React.Component {
+
+    constructor(props) {
+        super(props);
+        const date = new Date();
+
+        const strDate = String(date.getDate()).padStart(2, '0') + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + date.getFullYear();
+
+        this.state = {
+            date: strDate,
+            item: {},
+            showcontent: false
+        };
+
+        this.renderTableRows = this.renderTableRows.bind(this);
+
+    }
+    componentWillMount() {
+        // Retreiving data from db
+        new Database('sales').find({}).then((docs) => {
+            new Database('sales').findUsingBillNo(docs.length).then((items) => {
+                const doc = items[0];
+                this.setState({
+                    item: doc,
+                    showcontent: true
+                });
+           });
+        });
+    }
+
+    renderTableRows() {
+        const rows = [];
+        if (typeof (this.state.item) !== undefined) {
+            console.log(this.state.item.itemsBought);
+            this.state.item.itemsBought.forEach((obj) => {
+                rows.push(
+                    <tr>
+                        <td>{obj.name}</td>
+                        <td>{obj.cgst}</td>
+                        <td>{obj.sgst}</td>
+                        <td>{obj.mrp}</td>
+                        <td>{obj.amountAfterGST}</td>
+                        <td>{obj.quantity}</td>
+                        <br />
+                        <hr />
+                    </tr>
+                );
+            });
+        }
+        return rows;   
+    }
+
+
     render() {
-
-        const columns = [
-            {
-                title: 'Item', dataIndex: 'name', key: 'name', width: '40%',
-                render: text => <h3>{text}</h3>
-            },
-            {
-                title: 'Quantity', dataIndex: 'quantity', key: 'quantity', width: '15%',
-                render: text => <h3>{text}</h3>
-            },
-            {
-                title: 'MRP (1 item)', dataIndex: 'mrp', key: 'mrp', width: '15%',
-                render: text => <h3>₹ {text}</h3>
-            },
-            {
-                title: 'Total', key: 'total', dataIndex: 'total', width: '20%',
-                render: text => <h3>₹ {text}</h3>
-            },
-        ]// This the column schema
-
         return (
-            <div className="demo-infinite-container">
+            <div >
+                <link rel="stylesheet" type="text/css" href="../../app.css" />
                 <InfiniteScroll
                     initialLoad={true}
                     pageStart={0}
@@ -43,144 +78,43 @@ export default class Invoice extends React.Component {
                             </div>
                             <div className="memo-line"></div>
                             <div className="company-info" style = {{marginTop: 5}}>
-                                <div className='inBold'> Billed To  </div>
-                                <div> Neeraj Kumar Mishra</div>
-                                <div> MG Chowk, Dhaka</div>
-                                <div> 8340289040</div>
+                                <div className='inBold' style={{padding: 10}}> Billed To  </div>
+                                <div style={{paddingLeft: 10}}> {this.state.item.buyersName}</div>
+                                <div style={{paddingLeft: 10}}> {this.state.item.buyersAddress}</div>
+                                <div style={{paddingLeft: 10}}> {this.state.item.buyersPhoneNumber}</div>
                             </div>
+                            <br />
                             <div style = {{width: 'auto', float: 'right', marginRight: '18px'}}>
-                                Current Date
+                                {this.state.date}
                             </div>
+                            <br />
                         </Header>
+                        <br />
                         <Content>
-
+                            <div>
+                                <table className="zui-table">
+                                <thead>
+                                    <tr>
+                                    <th>Name</th>
+                                    <th>CGST</th>
+                                    <th>SGST</th>
+                                    <th>MRP</th>
+                                    <th>Total</th>
+                                    <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.showcontent == true ? this.renderTableRows() : '<div></ div>'}
+                                </tbody>
+                                </table>
+                            </div>
                         </Content>
                         <Footer style ={{padding: 10, marginTop: 10}}>
-                            <h3>Total Bill</h3>
+                            <h3>Total Bill: {this.state.item.totalAmount}</h3>
                         </Footer>
                     </Layout>
                 </InfiniteScroll>
             </div>
-
-            // <div>
-            //     <InfiniteScroll
-            //         initialLoad={false}
-            //         pageStart={0}
-            //         useWindow={false}
-            //     >
-            //         <div id="container">
-            //             <section id="memo">
-            //                 <div class="logo" >
-            //                     <img
-            //                         style={{ height: '40px', width: 'auto' }}
-            //                         src="../../../assets/logo.png"></img>
-            //                 </div>
-            //                 <div class="company-info">
-            //                     <div> Zoya Steel and Furniture.  </div>
-            //                     <div> Address</div>
-            //                     <div>Bihar, Zip code</div>
-            //                     <div>Phone Number</div>
-            //                     <div>emailId</div>
-            //                 </div>
-            //                 <div class="payment-info">
-            //                     <div>GST Number</div>
-            //                 </div>
-            //                 <div>
-            //                     <span>Date: </span>
-            //                     <span>issue_date</span>
-            //                 </div>
-            //             </section>
-            //             <div class="memo-line"></div>
-            //             <div class="memo-line"></div>
-            //             <section id="payment-info">
-            //                 <span>bill_to_label</span>
-            //                 <div>
-            //                     <span> Person Name </span>
-            //                 </div>
-
-            //                 <div>
-            //                     <span> Person Address </span>
-            //                 </div>
-
-            //                 <div>
-            //                     <span> Person Phone Number </span>
-            //                 </div>
-            //             </section>
-
-            //             <div class="clearfix"></div>
-
-            //             <section id="items">
-
-            //                 <table cellpadding="0" cellspacing="0">
-
-            //                     <tr>
-            //                         <th>  </th>
-            //                         <th> Item </th>
-            //                         <th> Quantity </th>
-            //                         <th> Price </th>
-            //                         <th> Tax </th>
-            //                         <th> Something </th>
-            //                         <th> Total</th>
-            //                     </tr>
-
-            //                     <tr data-iterate="item">
-            //                         <td> 0</td>
-            //                         <td>
-            //                             <span class="show-mobile"> 0 </span> <span> 0 </span>
-            //                         </td>
-            //                         <td><span class="show-mobile"> 0 </span> <span> 0 </span></td>
-            //                         <td><span class="show-mobile"> 0 </span> <span> 0 </span></td>
-            //                         <td><span class="show-mobile"> 0 </span> <span> 0 </span></td>
-            //                         <td><span class="show-mobile"> 0 </span> <span> 0 </span></td>
-            //                         <td><span class="show-mobile"> 0 </span> <span> 0 </span></td>
-            //                     </tr>
-
-            //                 </table>
-
-            //             </section>
-
-            //             <section id="sums">
-
-            //                 <table cellpadding="0" cellspacing="0">
-            //                     <tr>
-            //                         <th> amount_subtotal_label </th>
-            //                         <td> amount_subtotal </td>
-            //                     </tr>
-
-            //                     <tr data-iterate="tax">
-            //                         <th> tax_name </th>
-            //                         <td> tax_value </td>
-            //                     </tr>
-
-            //                     <tr class="amount-total">
-            //                         <th> amount_total_label </th>
-            //                         <td> amount_total </td>
-            //                     </tr>
-            //                     <tr data-hide-on-quote="true">
-            //                         <th> amount_paid_label </th>
-            //                         <td> amount_paid </td>
-            //                     </tr>
-
-            //                     <tr data-hide-on-quote="true">
-            //                         <th> amount_due_label </th>
-            //                         <td> amount_due </td>
-            //                     </tr>
-
-            //                 </table>
-
-            //             </section>
-
-            //             <div class="clearfix"></div>
-
-            //             <section id="terms">
-
-            //                 <span> terms_label </span>
-            //                 <div> terms </div>
-
-            //             </section>
-            //         </div>
-            //     </InfiniteScroll>
-            // </div>
         )
     }
 }
