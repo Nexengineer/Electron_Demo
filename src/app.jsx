@@ -4,6 +4,7 @@ import { Tabs, Icon, Layout, Button } from 'antd';
 const { Header, Footer, Content } = Layout;
 import BillingContent from './billing.content.component';
 import StockContent from './stock.content.component';
+import HistoryContent from './History/history.content.component';
 
 export default class App extends React.Component {
     render() {
@@ -25,7 +26,7 @@ export default class App extends React.Component {
                             <StockContent />
                         </Tabs.TabPane>
                         <Tabs.TabPane tab={<span><Icon type="copy" />History</span>} key="3">
-                            {/* <TransactionsContent /> */}
+                            <HistoryContent />
                         </Tabs.TabPane>
                     </Tabs>
                 </div>

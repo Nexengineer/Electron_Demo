@@ -16,25 +16,6 @@ class AddItemForm extends React.Component {
         this.onChangeInputValue = this.onChangeInputValue.bind(this);
     }
 
-    componentDidMount() {
-        let dbHandlerTemp = new Database('stock')
-        dbHandlerTemp.find({}).then((docs) => {
-            console.log(docs)
-            this.setState({
-                data: docs
-            })
-        });
-    }
-    componentWillMount (){
-        let dbHandlerTemp = new Database('stock')
-        dbHandlerTemp.find({}).then((docs) => {
-            console.log(docs)
-            this.setState({
-                data: docs
-            })
-        });
-    }
-
     onChangeInputValue(textValue) {
         console.log(textValue.target.value)
         let searchedArr;
@@ -54,6 +35,13 @@ class AddItemForm extends React.Component {
     }
 
     render() {
+        new Database('stock').find({}).then((docs) => {
+            console.log(docs);
+            this.setState({
+                data: docs
+            });
+        });
+
         // Columns Structure 
         const columns = [
             {

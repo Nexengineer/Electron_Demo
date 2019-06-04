@@ -44,8 +44,8 @@ export default class Invoice extends React.Component {
                         <td>{obj.name}</td>
                         <td>{obj.cgst}</td>
                         <td>{obj.sgst}</td>
-                        <td>{obj.mrp}</td>
-                        <td>{obj.amountAfterGST}</td>
+                        <td>₹ {obj.mrp}</td>
+                        <td>₹ {obj.amountAfterGST}</td>
                         <td>{obj.quantity}</td>
                         <br />
                         <hr />
@@ -78,7 +78,7 @@ export default class Invoice extends React.Component {
                             </div>
                             <div className="memo-line"></div>
                             <div className="company-info" style = {{marginTop: 5}}>
-                                <div className='inBold' style={{padding: 10}}> Billed To  </div>
+                                <div className='inBold' style={{padding: 10, fontWeight: 'bold'}}> Billed To  </div>
                                 <div style={{paddingLeft: 10}}> {this.state.item.buyersName}</div>
                                 <div style={{paddingLeft: 10}}> {this.state.item.buyersAddress}</div>
                                 <div style={{paddingLeft: 10}}> {this.state.item.buyersPhoneNumber}</div>
@@ -110,7 +110,7 @@ export default class Invoice extends React.Component {
                             </div>
                         </Content>
                         <Footer style ={{padding: 10, marginTop: 10}}>
-                            <h3>Total Bill: {this.state.item.totalAmount}</h3>
+                            <h3>Total Bill: ₹ {this.state.item.totalAmount}</h3>
                         </Footer>
                     </Layout>
                 </InfiniteScroll>

@@ -2,7 +2,7 @@ import DataStore from 'nedb';
 
 export default class Database {
     constructor(name){
-        this.db = new DataStore({filename:`./db/${name}.db`, autoload:true})
+        this.db = new DataStore({filename:`./db/${name}.db`, autoload:true});
     }
 
     // This is used for inserting 
@@ -66,6 +66,32 @@ export default class Database {
                     if (err) rej(err);
                     res(numReplaced)
            });
+        });
+    }
+
+    updateValueHash(id, quantity, predicatedEarning, actualEarning, soldDates) {
+        return new Promise((res, rej) => {
+            this.db.update({ id: id},
+                { $set: { 
+                    quantity: quantity,
+                    predicatedEarning: predicatedEarning,
+                    actualEarning: actualEarning,
+                    soldDates: soldDates
+                   },
+                 }, { multi: true }, function (err, numReplaced) {
+                    if (err) rej(err);
+                    res(numReplaced);
+           });
+        });
+
+    }
+
+    findUsingSoldHash(id) {
+        return new Promise((res, rej) => {
+            this.db.find({ id: id }, (err, docs) => {
+                if (err) rej(err);
+                res(docs);
+            });
         });
     }
 }

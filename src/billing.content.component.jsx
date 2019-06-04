@@ -61,6 +61,7 @@ class BillingContent extends React.Component {
             modalOpenPrint: false
         });
 
+
         // Creating the data for db 
         const dataBaseSales = new Database('sales');
         const date = new Date();
@@ -89,35 +90,57 @@ class BillingContent extends React.Component {
         });
         // Updating the values on stocks
         const dataBaseStock = new Database('stock');
+        const databaseSoldStock = new Database('stock_sold');
+        const itemAdded = this.state.itemsAdded;
 
-        for (let i = 0; i < this.state.itemsAdded.length; i += 1) {
-            dataBaseStock.findUsingHash(this.state.itemsAdded[i].id).then((doc) => {
-                if (doc.length > 0) {
-                    const tempQuantity = doc[0].quantity - this.state.itemsAdded[i].quantity;
-                    dataBaseStock.updateQuantity(doc[0].hash, tempQuantity)
-                    .then(() => {
+        for (let i = 0; i < itemAdded.length; i += 1) {
+            // Updating the quantity
+            dataBaseStock.findUsingHash(itemAdded[i].id).then((stock) => {
+                if (stock.length > 0) {
+                    const tempQuantity = stock[0].quantity - itemAdded[i].quantity;
+                    dataBaseStock.updateQuantity(stock[0].hash, tempQuantity)
+                    .then(()=>{
                         message.success(Messages.Messages.Update.Success);
-                        const soldObject = {
-                            id: this.state.itemsAdded[i].id,
-                            actualPriceTotal: this.state.itemsAdded[i].actualPriceTotal,
-                            cgst: this.state.itemsAdded[i].cgst,
-                            sgst: this.state.itemsAdded[i].sgst,
-                            total: this.state.itemsAdded[i].total,
-                            name: this.state.itemsAdded[i].name,
-                            quantity: this.state.itemsAdded[i].quantity,
-                            sellingDate: date,
-                            billNo: obj.billNo 
-                        };
-
-                        new Database('stock_sold').insert(soldObject);
-
                     }, (e) => {
                         message.error(Messages.Messages.Update.Failure);
                     });
                 }
             });
-        }
 
+            // Updating in sold 
+            databaseSoldStock.findUsingSoldHash(itemAdded[i].id).then((saveItems) => {
+                if (saveItems.length > 0) {
+                    const doc = saveItems[0];
+                    const updatedQuatity = Number(doc.quantity) + Number(itemAdded[i].quantity);
+                    const actualEarning = Number(doc.actualEarning) + (Number(itemAdded[i].mrp) * Number(itemAdded[i].quantity));
+                    const predicatedEarning = Number(doc.predicatedEarning) + Number(Number(itemAdded[i].actualPriceTotal) * Number(itemAdded[i].quantity));
+                    const soldDates = doc.soldDates;
+                    soldDates.push({
+                        date: new Date(),
+                        quantity: itemAdded[i].quantity,
+                        total: itemAdded[i].total 
+                    });
+                    databaseSoldStock.updateValueHash(doc.id, updatedQuatity, actualEarning, predicatedEarning, soldDates)
+                } else {
+                    const actualEarning = Number(itemAdded[i].mrp) * Number(itemAdded[i].quantity);
+                    const predicatedEarning = Number(itemAdded[i].actualPriceTotal) * Number(itemAdded[i].quantity);
+                    const soldDates = {
+                        date: new Date(),
+                        quantity: itemAdded[i].quantity,
+                        total: itemAdded[i].total
+                    };
+                    const soldObject = {
+                        id: itemAdded[i].id,
+                        name: itemAdded[i].name,
+                        quantity: itemAdded[i].quantity,
+                        actualEarning: actualEarning,
+                        predicatedEarning: predicatedEarning,
+                        soldDates: [soldDates]
+                    };
+                    databaseSoldStock.insert(soldObject);
+                }
+            });
+        }
         const doc = new jsPDF();
 
         doc.setFontSize(40);
@@ -127,14 +150,17 @@ class BillingContent extends React.Component {
         Printer.print(doc, "My Name is neeraj");
 
         console.log(this.form);
+        this.form.resetFields();
+
     }
 
     handleReset() {
         console.log("Reset will be hadled here");
         this.setState({
             currentID: 0,
-            itemsAdded: []
-        })
+            itemsAdded: [],
+            gstChangeAllowed: false
+        });
     }
 
     // This code chunck is handling the increase and decrese in quantity
