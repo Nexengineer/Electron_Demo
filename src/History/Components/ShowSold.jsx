@@ -47,7 +47,7 @@ class ShowSold extends React.Component {
     handleCancel() {
         this.setState({
             showModel: false,
-        })
+        });
     }
 
     render() {

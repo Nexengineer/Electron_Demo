@@ -89,6 +89,12 @@
     padding: 8px;
     width: 100%;
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
   
 /* 
 .zui-table {

@@ -112,15 +112,15 @@ class BillingContent extends React.Component {
                 if (saveItems.length > 0) {
                     const doc = saveItems[0];
                     const updatedQuatity = Number(doc.quantity) + Number(itemAdded[i].quantity);
-                    const actualEarning = Number(doc.actualEarning) + (Number(itemAdded[i].mrp) * Number(itemAdded[i].quantity));
-                    const predicatedEarning = Number(doc.predicatedEarning) + Number(Number(itemAdded[i].actualPriceTotal) * Number(itemAdded[i].quantity));
+                    const actualEarning = (Number(itemAdded[i].mrp) * Number(updatedQuatity));
+                    const predicatedEarning = (Number(itemAdded[i].actualPriceTotal) * Number(updatedQuatity));
                     const soldDates = doc.soldDates;
                     soldDates.push({
                         date: new Date(),
                         quantity: itemAdded[i].quantity,
                         total: itemAdded[i].total 
                     });
-                    databaseSoldStock.updateValueHash(doc.id, updatedQuatity, actualEarning, predicatedEarning, soldDates)
+                    databaseSoldStock.updateValueHash(doc.id, updatedQuatity, predicatedEarning, actualEarning, soldDates)
                 } else {
                     const actualEarning = Number(itemAdded[i].mrp) * Number(itemAdded[i].quantity);
                     const predicatedEarning = Number(itemAdded[i].actualPriceTotal) * Number(itemAdded[i].quantity);

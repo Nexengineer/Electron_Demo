@@ -65,7 +65,7 @@ class HistoryContent extends React.Component {
 
         return (
             <div className='rows'>
-                <div style={{ marginBottom: '12px' }}>
+                <div style={{ marginBottom: '12px' }} className='Billing'>
                     <Button
                         type='primary'
                         icon='container'

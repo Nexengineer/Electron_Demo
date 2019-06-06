@@ -44,9 +44,10 @@ export default class Invoice extends React.Component {
                         <td>{obj.name}</td>
                         <td>{obj.cgst}</td>
                         <td>{obj.sgst}</td>
-                        <td>₹ {obj.mrp}</td>
-                        <td>₹ {obj.amountAfterGST}</td>
+                        <td>₹{obj.mrp}</td>
+                        <td>₹{obj.amountAfterGST}</td>
                         <td>{obj.quantity}</td>
+                        <td>₹{obj.total}</td>
                         <br />
                         <hr />
                     </tr>
@@ -99,8 +100,9 @@ export default class Invoice extends React.Component {
                                     <th>CGST</th>
                                     <th>SGST</th>
                                     <th>MRP</th>
-                                    <th>Total</th>
+                                    <th>MRP(GST)</th>
                                     <th>Quantity</th>
+                                    <th>Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
