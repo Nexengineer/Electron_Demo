@@ -1,2 +1,1 @@
-# Electron_Demo
-This will be updated stortly
+# Billing System Build in ElectronJS
