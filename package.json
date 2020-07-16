@@ -59,7 +59,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "js-sha256": "^0.9.0",
     "jspdf": "^1.5.3",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "nedb": "^1.8.0",
     "nvm": "0.0.4",
     "rc-table": "^6.4.1",
