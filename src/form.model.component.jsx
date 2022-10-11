@@ -49,8 +49,12 @@ class AddItemForm extends React.Component {
                 render: text => <h3>{text}</h3>
             },
             {
-                title: 'MRP (1 item)', dataIndex: 'mrp', key: 'mrp', width: '25%',
+                title: 'MRP (1 item)', dataIndex: 'mrp', key: 'mrp', width: '15%',
                 render: text => <h3>₹ {text}</h3>
+            },
+            {
+                title: 'In-stock', dataIndex: 'instock', key: 'instock', width: '10%',
+                render: text => <h3>{text}</h3>
             },
             {
                 title: 'Action', key: 'action', width: '25%', render: (r) => {
