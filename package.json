@@ -69,7 +69,7 @@
     "react-hot-loader": "^3.0.0-beta.6",
     "react-infinite-scroller": "^1.2.2",
     "react-table": "^6.8.6",
-    "recharts": "^1.0.0-beta.10"
+    "recharts": "^2.1.14"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
