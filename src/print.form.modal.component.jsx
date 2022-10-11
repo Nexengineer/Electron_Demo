@@ -7,7 +7,9 @@ class PrintForm extends React.Component {
         super(props)
         this.state = {
             name: '',
-            address: '',
+            address1: '',
+            address2: '',
+            address3: '',
             phone: ''
         }
         this.icons = {
@@ -29,8 +31,20 @@ class PrintForm extends React.Component {
                 <Form.Item>
                     <Input
                         prefix={this.icons.address}
-                        placeholder='Address'
-                        onChange={value => { this.setState({ address: value.target.value }) }} />
+                        placeholder='Address 1'
+                        onChange={value => { this.setState({ address1: value.target.value }) }} />
+                </Form.Item>
+                <Form.Item>
+                    <Input
+                        prefix={this.icons.address}
+                        placeholder='Address 2'
+                        onChange={value => { this.setState({ address2: value.target.value }) }} />
+                </Form.Item>
+                <Form.Item>
+                    <Input
+                        prefix={this.icons.address}
+                        placeholder='Address 3'
+                        onChange={value => { this.setState({ address3: value.target.value }) }} />
                 </Form.Item>
                 <Form.Item>
                     <Input
