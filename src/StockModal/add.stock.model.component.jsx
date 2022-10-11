@@ -16,6 +16,7 @@ class AddModelStock extends React.Component {
             actual_price: <Icon type="tag" style={{ color: 'rgba(0,0,0,.25)' }} />,
             quantity: <Icon type="edit" style={{ color: 'rgba(0,0,0,.25)' }} />,
             billNo: <Icon type="read" style={{ color: 'rgba(0,0,0,.25)' }} />,
+            instock: <Icon type="tag" style={{ color: 'rgba(0,0,0,.25)' }} />,
         };
 
         this.confirmField = this.confirmField.bind(this);
@@ -106,6 +107,17 @@ class AddModelStock extends React.Component {
                         }],
                     })(
                         <Input prefix={this.icons.billNo} placeholder="Bill Number" />
+                    )}
+                </Form.Item>
+                <Form.Item>
+                    {getFieldDecorator('instock',{
+                        rules:[{
+                            required: true, message: 'Please enter the instock details',
+                        },{
+                            validator: this.checkForNumber,
+                        }],
+                    })(
+                        <Input prefix={this.icons.billNo} placeholder="In Stock" />
                     )}
                 </Form.Item>
             </Form>
